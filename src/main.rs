@@ -1,150 +1,94 @@
-use image::{ImageBuffer, Rgba, RgbaImage};
-use std::io::{self, Write};
-use gif::{Frame, Encoder, Repeat};
+use image::{ImageBuffer, Rgba};
+use num_complex::Complex;
+use gif::{Encoder, Frame, Repeat};
 use std::fs::File;
-use std::borrow::Cow;
 
-fn draw_cantor_square(
-    image: &mut RgbaImage,
-    x: u32,
-    y: u32,
-    size: u32,
-    iterations: u32,
-    color: Rgba<u8>,
-) {
-    if size == 0 {
-        return;
-    }
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 800;
+const MAX_ITERATIONS: u32 = 256;
+const NUM_FRAMES: u32 = 120;
+const ZOOM_FACTOR: f64 = 1.1;
 
-    if iterations == 0 {
-        draw_filled_rectangle(image, x, y, size, color);
-        return;
-    }
+const ZOOM_CENTER_X: f64 = -0.7469;
+const ZOOM_CENTER_Y: f64 = 0.1102;
 
-    let sub_size = size / 3;
-
-    // Draw only 4 corner squares
-    for i in [0, 2].iter() {
-        for j in [0, 2].iter() {
-            draw_cantor_square(
-                image,
-                x + i * sub_size,
-                y + j * sub_size,
-                sub_size,
-                iterations - 1,
-                color,
-            );
+fn mandelbrot_iterations(c: Complex<f64>, max_iter: u32) -> u32 {
+    let mut z = Complex::new(0.0, 0.0);
+    for n in 0..max_iter {
+        if z.norm_sqr() > 4.0 {
+            return n;
         }
+        z = z * z + c;
     }
+    max_iter
 }
 
-fn draw_filled_rectangle(
-    image: &mut RgbaImage,
-    x: u32,
-    y: u32,
-    size: u32,
-    color: Rgba<u8>,
-) {
-    for i in 0..size {
-        for j in 0..size {
-            let px = x + i;
-            let py = y + j;
-            if px < image.width() && py < image.height() {
-                image.put_pixel(px, py, color);
-            }
+fn render_frame(width: u32, height: u32, center_x: f64, center_y: f64, zoom: f64) -> Vec<u8> {
+    let mut pixels = vec![0u8; (width * height) as usize];
+    
+    let view_size = 4.0 / zoom;
+    let x_min = center_x - view_size / 2.0;
+    let y_min = center_y - view_size / 2.0;
+    let x_max = center_x + view_size / 2.0;
+    let y_max = center_y + view_size / 2.0;
+    
+    for py in 0..height {
+        for px in 0..width {
+            let x = x_min + (px as f64 / width as f64) * (x_max - x_min);
+            let y = y_min + (py as f64 / height as f64) * (y_max - y_min);
+            let c = Complex::new(x, y);
+            
+            let iterations = mandelbrot_iterations(c, MAX_ITERATIONS);
+            let color_index = (iterations as u8) % 255;
+            
+            pixels[(py * width + px) as usize] = color_index;
         }
     }
+    
+    pixels
 }
 
-fn rgba_to_indexed(image: &RgbaImage) -> Vec<u8> {
-    let mut indexed = Vec::new();
-    for pixel in image.pixels() {
-        // Simple conversion: if pixel is black, use index 1; otherwise index 0 (white)
-        if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 {
-            indexed.push(1);
-        } else {
-            indexed.push(0);
-        }
+// Create a colorful palette (256 colors)
+fn create_palette() -> Vec<u8> {
+    let mut palette = vec![0u8; 768]; // 256 colors * 3 (RGB)
+    
+    for i in 0..255 {
+        let idx = i as usize * 3;
+        // Create a smooth color gradient
+        palette[idx] = ((i as f64 * 1.5).sin() * 127.0 + 128.0) as u8;      // R
+        palette[idx + 1] = ((i as f64 * 2.0).sin() * 127.0 + 128.0) as u8;  // G
+        palette[idx + 2] = ((i as f64 * 0.5).sin() * 127.0 + 128.0) as u8;  // B
     }
-    indexed
+    
+    palette
 }
 
 fn main() {
-    println!("=== Générateur de Carré de Cantor (GIF Animé) ===\n");
-
-    // Get initial size
-    print!("Taille du carré initial (pixels) [par défaut: 486]: ");
-    io::stdout().flush().unwrap();
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    let size: u32 = input.trim().parse().unwrap_or(486);
-
-    // Get max iterations
-    print!("Nombre maximum d'itérations [par défaut: 4]: ");
-    io::stdout().flush().unwrap();
-    input.clear();
-    io::stdin().read_line(&mut input).unwrap();
-    let max_iterations: u32 = input.trim().parse().unwrap_or(4);
-
-    // Get frame delay (milliseconds)
-    print!("Délai entre les frames en ms [par défaut: 500]: ");
-    io::stdout().flush().unwrap();
-    input.clear();
-    io::stdin().read_line(&mut input).unwrap();
-    let frame_delay: u16 = input.trim().parse().unwrap_or(500);
-
-    // Get output filename
-    print!("Nom du fichier GIF [par défaut: cantor_animation.gif]: ");
-    io::stdout().flush().unwrap();
-    input.clear();
-    io::stdin().read_line(&mut input).unwrap();
-    let filename = match input.trim() {
-        "" => "cantor_animation.gif".to_string(),
-        name => name.to_string(),
-    };
-
-    // Color palette: white (0,0,0) and black (1,0,0)
-    let color_map = vec![255, 255, 255, 0, 0, 0];
-
-    println!("\nGénération de l'animation GIF...");
-
-    // Create GIF encoder
-    let output = File::create(&filename)
-        .expect("Erreur: impossible de créer le fichier GIF");
-    let mut encoder = Encoder::new(output, size as u16, size as u16, &color_map)
-        .expect("Erreur: impossible de créer l'encodeur GIF");
+    println!("Generating infinite zoom Mandelbrot GIF...");
     
-    encoder.set_repeat(Repeat::Infinite)
-        .expect("Erreur: impossible de définir la boucle infinie");
-
-    // Generate frames for infinite zoom effect
-    for frame_idx in 0..=max_iterations {
-        // Create a new image for this frame
-        let mut image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
-        let color = Rgba([0, 0, 0, 255]);
-
-        // Draw with increasing iterations for zoom effect
-        draw_cantor_square(&mut image, 0, 0, size, frame_idx, color);
-
-        // Convert RGBA to indexed color
-        let indexed = rgba_to_indexed(&image);
-
-        // Create frame
+    let file = File::create("mandelbrot_zoom.gif").expect("Failed to create GIF");
+    let mut encoder = Encoder::new(file, WIDTH as u16, HEIGHT as u16, &create_palette()).expect("Failed to create encoder");
+    encoder.set_repeat(Repeat::Infinite).expect("Failed to set repeat");
+    
+    let mut zoom = 1.0;
+    
+    for frame_num in 0..NUM_FRAMES {
+        println!("Rendering frame {}/{}", frame_num + 1, NUM_FRAMES);
+        
+        // Render pixels as 8-bit indexed color
+        let pixels = render_frame(WIDTH, HEIGHT, ZOOM_CENTER_X, ZOOM_CENTER_Y, zoom);
+        
+        // Create GIF frame
         let mut frame = Frame::default();
-        frame.width = size as u16;
-        frame.height = size as u16;
-        frame.delay = frame_delay / 10;
-        frame.buffer = Cow::Borrowed(&indexed);
-
-        encoder.write_frame(&frame)
-            .expect("Erreur: impossible d'écrire la frame GIF");
-
-        println!("✓ Itération {} générée", frame_idx);
+        frame.width = WIDTH as u16;
+        frame.height = HEIGHT as u16;
+        frame.delay = 5; // 50ms per frame
+        frame.buffer = std::borrow::Cow::Owned(pixels);
+        
+        encoder.write_frame(&frame).expect("Failed to write frame");
+        
+        zoom *= ZOOM_FACTOR;
     }
-
-    println!("\n✓ GIF animé sauvegardé: {}", filename);
-    println!("  - Taille: {} × {} pixels", size, size);
-    println!("  - Itérations: 0 à {}", max_iterations);
-    println!("  - Délai par frame: {}ms", frame_delay);
-    println!("  - Nombre total de frames: {}", max_iterations + 1);
+    
+    println!("✨ GIF saved as mandelbrot_zoom.gif!");
 }
