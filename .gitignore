@@ -24,3 +24,14 @@ target
 # Added by cargo
 
 /target
+
+# Ignore images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.ico
+*.webp
