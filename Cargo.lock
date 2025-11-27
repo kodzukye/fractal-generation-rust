@@ -134,6 +134,7 @@ dependencies = [
 name = "fractal-generation-rust"
 version = "0.1.0"
 dependencies = [
+ "gif",
  "image",
  "num-complex",
 ]
