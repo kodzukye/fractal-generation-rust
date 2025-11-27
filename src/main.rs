@@ -117,29 +117,29 @@ fn main() {
     encoder.set_repeat(Repeat::Infinite)
         .expect("Erreur: impossible de définir la boucle infinie");
 
-    // Generate frames for each iteration
-    for current_iter in 0..=max_iterations {
-        // Create a new image for this iteration
+    // Generate frames for infinite zoom effect
+    for frame_idx in 0..=max_iterations {
+        // Create a new image for this frame
         let mut image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
         let color = Rgba([0, 0, 0, 255]);
 
-        // Draw the Cantor square at this iteration level
-        draw_cantor_square(&mut image, 0, 0, size, current_iter, color);
+        // Draw with increasing iterations for zoom effect
+        draw_cantor_square(&mut image, 0, 0, size, frame_idx, color);
 
-        // Convert RGBA to indexed color (black/white only)
+        // Convert RGBA to indexed color
         let indexed = rgba_to_indexed(&image);
 
         // Create frame
         let mut frame = Frame::default();
         frame.width = size as u16;
         frame.height = size as u16;
-        frame.delay = frame_delay / 10; // GIF delay is in units of 10ms
+        frame.delay = frame_delay / 10;
         frame.buffer = Cow::Borrowed(&indexed);
 
         encoder.write_frame(&frame)
             .expect("Erreur: impossible d'écrire la frame GIF");
 
-        println!("✓ Itération {} générée", current_iter);
+        println!("✓ Itération {} générée", frame_idx);
     }
 
     println!("\n✓ GIF animé sauvegardé: {}", filename);
