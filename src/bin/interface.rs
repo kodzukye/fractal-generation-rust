@@ -664,7 +664,7 @@ impl FraCantor {
         
         const WIDTH: usize = 800;  // Taille réduite pour l'export UI
         const HEIGHT: usize = 800;
-        const NUM_FRAMES: u32 = 45;
+        const NUM_FRAMES: u32 = 23;
         const ZOOM_SPEED: f32 = 1.05;
         
         let mut file = File::create(filename).expect("Erreur création fichier");
@@ -693,7 +693,7 @@ impl FraCantor {
         let view_size = size as f32 / zoom;
         
         // Calculer les itérations dynamiquement
-        let iterations = (5 + (zoom.log(3.0)).floor() as u32).min(6);
+        let iterations = self.iterations;
         
         // Générer l'image complète
         let mut full_image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
