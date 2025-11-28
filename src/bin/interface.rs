@@ -3,6 +3,9 @@ use image::{Rgba, RgbaImage};
 use svg::node::element::Rectangle;
 use rand::Rng;
 use svg::Document;
+use gif::{Encoder, Frame, Repeat};
+use std::fs::File;
+use rayon::prelude::*;
 
 fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
@@ -424,7 +427,7 @@ impl FraCantor {
                             }
 
                             if ui.add_sized(button_size, egui::Button::new("GIF")).clicked() {
-                                println!("Export GIF non implémenté");
+                                self.export_gif("cantor.gif");
                             }
                         });
                 });
@@ -656,4 +659,65 @@ impl FraCantor {
         
         rectangles
     }
+    fn export_gif(&self, filename: &str) {
+        println!("Génération du GIF...");
+        
+        const WIDTH: usize = 800;  // Taille réduite pour l'export UI
+        const HEIGHT: usize = 800;
+        const NUM_FRAMES: u32 = 45;
+        const ZOOM_SPEED: f32 = 1.05;
+        
+        let mut file = File::create(filename).expect("Erreur création fichier");
+        let mut encoder = Encoder::new(&mut file, WIDTH as u16, HEIGHT as u16, &[])
+            .expect("Erreur création encoder");
+        encoder.set_repeat(Repeat::Infinite).expect("Erreur repeat");
+        
+        let color = self.colors[self.selected_color];
+        let mut zoom = 1.0f32;
+        
+        for frame_num in 0..NUM_FRAMES {
+            println!("Frame {}/{}", frame_num + 1, NUM_FRAMES);
+            
+            let pixels = self.render_gif_frame(WIDTH, HEIGHT, zoom, color);
+            let frame = Frame::from_rgb(WIDTH as u16, HEIGHT as u16, &pixels);
+            encoder.write_frame(&frame).expect("Erreur écriture frame");
+            
+            zoom *= ZOOM_SPEED;
+        }
+        
+        println!("✓ GIF sauvegardé: {}", filename);
+    }
+
+    fn render_gif_frame(&self, width: usize, height: usize, zoom: f32, color: image::Rgba<u8>) -> Vec<u8> {
+        let size = width.max(height) as u32;
+        let view_size = size as f32 / zoom;
+        
+        // Calculer les itérations dynamiquement
+        let iterations = (5 + (zoom.log(3.0)).floor() as u32).min(6);
+        
+        // Générer l'image complète
+        let mut full_image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
+        self.draw_cantor_square(&mut full_image, 0, 0, size, iterations, color);
+        
+        // Extraire la région zoomée et convertir en RGB
+        let mut pixels = vec![0u8; width * height * 3];
+        
+        for y in 0..height {
+            for x in 0..width {
+                let src_x = (x as f32 * view_size / width as f32) as u32;
+                let src_y = (y as f32 * view_size / height as f32) as u32;
+                
+                if src_x < size && src_y < size {
+                    let pixel = full_image.get_pixel(src_x, src_y);
+                    let pos = (y * width + x) * 3;
+                    pixels[pos] = pixel[0];
+                    pixels[pos + 1] = pixel[1];
+                    pixels[pos + 2] = pixel[2];
+                }
+            }
+        }
+        
+        pixels
+    }
+
 }
