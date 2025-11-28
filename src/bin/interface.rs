@@ -90,11 +90,11 @@ impl Default for FraCantor {
             selected_color: 0,
             texture: None,
             colors: vec![
-                Rgba([95, 49, 49, 255]),
-                Rgba([113, 58, 58, 255]),
-                Rgba([131, 67, 67, 255]),
-                Rgba([149, 76, 76, 255]),
-                Rgba([167, 85, 85, 255]),
+                Rgba([239, 71, 111, 255]),   // rose/rouge flashy
+                Rgba([255, 209, 102, 255]),  // jaune pastel
+                Rgba([6, 214, 160, 255]),    // vert menthe
+                Rgba([17, 138, 178, 255]),   // bleu vif
+                Rgba([155, 111, 242, 255]),  // violet
             ],
         }
     }
