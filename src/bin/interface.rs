@@ -1,6 +1,8 @@
 use eframe::egui;
 use image::{Rgba, RgbaImage};
 use rand::Rng;
+use svg::node::element::Rectangle;
+use svg::Document;
 
 fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
@@ -294,7 +296,7 @@ impl FraCantor {
                     self.export_image("cantor.jpg");
                 }
                 if ui.button("Exporter en svg").clicked() {
-                    println!("Export SVG non implémenté");
+                    self.export_svg("cantor.svg");
                 }
                 if ui.button("Exporter en gif").clicked() {
                     println!("Export GIF non implémenté");
@@ -455,4 +457,77 @@ impl FraCantor {
         image.save(filename).expect("Erreur lors de la sauvegarde");
         println!("✓ Image sauvegardée: {}", filename);
     }
+    fn export_svg(&self, filename: &str) {
+        
+        let size = 2187; // 3^7 pour être divisible
+        let color = self.colors[self.selected_color];
+        
+        let mut document = Document::new()
+            .set("width", size)
+            .set("height", size)
+            .set("viewBox", (0, 0, size, size));
+        
+        // Dessiner le fond blanc
+        let background = Rectangle::new()
+            .set("x", 0)
+            .set("y", 0)
+            .set("width", size)
+            .set("height", size)
+            .set("fill", "white");
+        document = document.add(background);
+        
+        // Générer les rectangles de la fractale
+        let rectangles = self.generate_svg_rectangles(0, 0, size, self.iterations, color);
+        for rect in rectangles {
+            document = document.add(rect);
+        }
+        
+        svg::save(filename, &document).expect("Erreur lors de la sauvegarde SVG");
+        println!("✓ SVG sauvegardé: {}", filename);
+    }
+
+    fn generate_svg_rectangles(
+        &self,
+        x: u32,
+        y: u32,
+        size: u32,
+        iterations: u32,
+        color: image::Rgba<u8>,
+    ) -> Vec<svg::node::element::Rectangle> {
+        use svg::node::element::Rectangle;
+        
+        let mut rectangles = Vec::new();
+        
+        if size == 0 {
+            return rectangles;
+        }
+        
+        if iterations == 0 {
+            let rect = Rectangle::new()
+                .set("x", x)
+                .set("y", y)
+                .set("width", size)
+                .set("height", size)
+                .set("fill", format!("rgb({},{},{})", color[0], color[1], color[2]));
+            rectangles.push(rect);
+            return rectangles;
+        }
+        
+        let sub_size = size / 3;
+        for i in [0, 2].iter() {
+            for j in [0, 2].iter() {
+                let mut sub_rects = self.generate_svg_rectangles(
+                    x + (i * sub_size),
+                    y + (j * sub_size),
+                    sub_size,
+                    iterations - 1,
+                    color,
+                );
+                rectangles.append(&mut sub_rects);
+            }
+        }
+        
+        rectangles
+    }
+
 }
