@@ -15,4 +15,5 @@ gif = "0.13"
 eframe = "0.29"
 egui = "0.29"
 rand = "0.9"
+rayon = "1.7"
 
