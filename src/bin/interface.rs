@@ -6,16 +6,16 @@ use svg::Document;
 
 fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1400.0, 900.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([1400.0, 900.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([1400.0, 900.0]),
         ..Default::default()
     };
-    
+
+
     eframe::run_native(
         "FraCantor",
         options,
         Box::new(|cc| {
-            // Personnaliser le style global
             customize_style(&cc.egui_ctx);
             Ok(Box::new(FraCantor::default()))
         }),
@@ -24,59 +24,101 @@ fn main() -> Result<(), eframe::Error> {
 
 fn customize_style(ctx: &egui::Context) {
     let mut style = (*ctx.style()).clone();
-    
-    // Personnaliser les couleurs des widgets
-    style.visuals.widgets.noninteractive.bg_fill = egui::Color32::from_rgb(249, 250, 251); // #F9FAFB
-    style.visuals.widgets.noninteractive.weak_bg_fill = egui::Color32::from_rgb(249, 250, 251);
-    style.visuals.widgets.noninteractive.bg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)); // #FF0000
-    
+
+    // Fond global uniforme
+    style.visuals.panel_fill = egui::Color32::from_rgb(249, 250, 251); // #F9FAFB
+
+    // Widgets
+    style.visuals.widgets.noninteractive.bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.noninteractive.weak_bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.noninteractive.bg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 200, 200));
+
+
+    // Fond global uniforme
+    style.visuals.panel_fill = egui::Color32::from_rgb(249, 250, 251); // #F9FAFB
+
+    // Widgets
+    style.visuals.widgets.noninteractive.bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.noninteractive.weak_bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.noninteractive.bg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 200, 200));
+
     // Boutons non actifs
-    style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(249, 250, 251); // #F9FAFB
-    style.visuals.widgets.inactive.weak_bg_fill = egui::Color32::from_rgb(249, 250, 251);
-    style.visuals.widgets.inactive.bg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(200, 200, 200));
-    style.visuals.widgets.inactive.fg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(60, 60, 60));
-    
+    style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.inactive.weak_bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.inactive.bg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 200, 200));
+    style.visuals.widgets.inactive.fg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(189, 0, 0));
+
+    style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.inactive.weak_bg_fill = egui::Color32::from_rgb(255, 255, 255);
+    style.visuals.widgets.inactive.bg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 200, 200));
+    style.visuals.widgets.inactive.fg_stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(189, 0, 0));
+
     // Boutons survolés
-    style.visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(255, 240, 240);
-    style.visuals.widgets.hovered.weak_bg_fill = egui::Color32::from_rgb(255, 240, 240);
-    style.visuals.widgets.hovered.bg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)); // #FF0000
-    style.visuals.widgets.hovered.fg_stroke = egui::Stroke::new(1.5, egui::Color32::from_rgb(189, 0, 0)); // #BD0000
-    
-    // Boutons actifs (cliqués)
-    style.visuals.widgets.active.bg_fill = egui::Color32::from_rgb(255, 220, 220);
-    style.visuals.widgets.active.weak_bg_fill = egui::Color32::from_rgb(255, 220, 220);
-    style.visuals.widgets.active.bg_stroke = egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0)); // #FF0000
-    style.visuals.widgets.active.fg_stroke = egui::Stroke::new(2.0, egui::Color32::from_rgb(189, 0, 0)); // #BD0000
-    
-    // Boutons ouverts (menus, etc.)
-    style.visuals.widgets.open.bg_fill = egui::Color32::from_rgb(249, 250, 251);
-    style.visuals.widgets.open.weak_bg_fill = egui::Color32::from_rgb(249, 250, 251);
-    style.visuals.widgets.open.bg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0));
-    
+    style.visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(255, 245, 245);
+    style.visuals.widgets.hovered.weak_bg_fill = egui::Color32::from_rgb(255, 245, 245);
+    style.visuals.widgets.hovered.bg_stroke =
+        egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0));
+    style.visuals.widgets.hovered.fg_stroke =
+        egui::Stroke::new(1.5, egui::Color32::from_rgb(189, 0, 0));
+
+    // Boutons actifs
+    style.visuals.widgets.active.bg_fill = egui::Color32::from_rgb(255, 235, 235);
+    style.visuals.widgets.active.weak_bg_fill = egui::Color32::from_rgb(255, 235, 235);
+    style.visuals.widgets.active.bg_stroke =
+        egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0));
+    style.visuals.widgets.active.fg_stroke =
+        egui::Stroke::new(2.0, egui::Color32::from_rgb(189, 0, 0));
+
+    style.visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(255, 245, 245);
+    style.visuals.widgets.hovered.weak_bg_fill = egui::Color32::from_rgb(255, 245, 245);
+    style.visuals.widgets.hovered.bg_stroke =
+        egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0));
+    style.visuals.widgets.hovered.fg_stroke =
+        egui::Stroke::new(1.5, egui::Color32::from_rgb(189, 0, 0));
+
+    // Boutons actifs
+    style.visuals.widgets.active.bg_fill = egui::Color32::from_rgb(255, 235, 235);
+    style.visuals.widgets.active.weak_bg_fill = egui::Color32::from_rgb(255, 235, 235);
+    style.visuals.widgets.active.bg_stroke =
+        egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0));
+    style.visuals.widgets.active.fg_stroke =
+        egui::Stroke::new(2.0, egui::Color32::from_rgb(189, 0, 0));
+
     // Sliders
-    style.visuals.selection.bg_fill = egui::Color32::from_rgb(189, 0, 0); // #BD0000 - partie remplie du slider
-    style.visuals.selection.stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)); // #FF0000
-    
-    // Poignée du slider
-    style.visuals.widgets.inactive.expansion = 0.0;
-    style.visuals.widgets.hovered.expansion = 2.0;
-    style.visuals.widgets.active.expansion = 2.0;
-    
-    // Activer le remplissage des sliders
+    style.visuals.selection.bg_fill = egui::Color32::from_rgb(255, 0, 0);
+    style.visuals.selection.stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0));
+    style.visuals.selection.bg_fill = egui::Color32::from_rgb(255, 0, 0);
+    style.visuals.selection.stroke =
+        egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0));
     style.visuals.slider_trailing_fill = true;
-    
-    // Coins arrondis pour les boutons
-    style.visuals.widgets.noninteractive.rounding = egui::Rounding::same(6.0);
-    style.visuals.widgets.inactive.rounding = egui::Rounding::same(6.0);
-    style.visuals.widgets.hovered.rounding = egui::Rounding::same(6.0);
-    style.visuals.widgets.active.rounding = egui::Rounding::same(6.0);
-    
+
+    // Coins arrondis
+    style.visuals.widgets.noninteractive.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.inactive.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.hovered.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.active.rounding = egui::Rounding::same(8.0);
+
+
+    // Coins arrondis
+    style.visuals.widgets.noninteractive.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.inactive.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.hovered.rounding = egui::Rounding::same(8.0);
+    style.visuals.widgets.active.rounding = egui::Rounding::same(8.0);
+
     // Couleur du texte
-    style.visuals.override_text_color = Some(egui::Color32::from_rgb(60, 60, 60));
-    
+    style.visuals.override_text_color = Some(egui::Color32::from_rgb(50, 50, 50));
+
+    style.visuals.override_text_color = Some(egui::Color32::from_rgb(50, 50, 50));
+
     ctx.set_style(style);
 }
-
 
 struct FraCantor {
     iterations: u32,
@@ -89,7 +131,8 @@ struct FraCantor {
 impl Default for FraCantor {
     fn default() -> Self {
         Self {
-            iterations: 2,
+            iterations: 1,
+            iterations: 1,
             zoom: 1.0,
             selected_color: 0,
             texture: None,
@@ -106,282 +149,738 @@ impl Default for FraCantor {
 
 impl eframe::App for FraCantor {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Panneau latéral gauche
-        egui::SidePanel::left("sidebar")
-            .min_width(280.0)
-            .max_width(300.0)
-            .frame(egui::Frame::none()
-                .fill(egui::Color32::from_rgb(249, 250, 251)))  // #F9FAFB
-            .show(ctx, |ui| {
-                ui.add_space(10.0);
-                
-                // Titre
-                ui.heading(egui::RichText::new("FraCantor")
-                    .size(28.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0)));  // #BD0000
-                
-                ui.add_space(15.0);
-                
-                // Section Paramètres
-                self.render_parameters_section(ui);
-                
-                ui.add_space(15.0);
-                
-                // Section Présets
-                self.render_presets_section(ui);
-                
-                ui.add_space(15.0);
-                
-                // Section Couleurs
-                self.render_colors_section(ui);
-                
-                ui.add_space(15.0);
-                
-                // Section Export
-                self.render_export_section(ui);
-                
-                ui.add_space(15.0);
-                
-                // Section Stats
-                self.render_stats_section(ui);
-            });
-        
-        // Panneau central pour afficher la fractale
         egui::CentralPanel::default()
-            .frame(egui::Frame::none()
-                .fill(egui::Color32::from_rgb(249, 237, 237)))  // #F9EDED
+            .frame(egui::Frame::none().fill(egui::Color32::from_rgb(249, 250, 251)))
+        egui::CentralPanel::default()
+            .frame(egui::Frame::none().fill(egui::Color32::from_rgb(249, 250, 251)))
             .show(ctx, |ui| {
-                self.render_fractal(ui, ctx);
-        });
+                ui.horizontal_top(|ui| {
+                    // COLONNE GAUCHE (Sidebar) - Largeur fixe
+                    ui.allocate_ui(egui::vec2(320.0, ui.available_height()), |ui| {
+                        ui.add_space(20.0);
+
+                        ui.horizontal(|ui| {
+                            ui.add_space(12.0); // Marge gauche
+                            
+                            // DIMENSIONS FIXES POUR TOUTES LES CARTES
+                            ui.vertical(|ui| {
+                                let card_width = 296.0; // Largeur fixe
+                                let card_height = 112.0; // Hauteur fixe
+                                
+                                // Carte titre
+                                ui.allocate_ui(egui::vec2(card_width, 0.0), |ui| {
+                                    egui::Frame::none()
+                                        .fill(egui::Color32::from_rgb(249, 237, 237))
+                                        .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+                                        .rounding(12.0)
+                                        .inner_margin(egui::Margin::symmetric(20.0, 16.0))
+                                        .show(ui, |ui| {
+                                            ui.vertical_centered(|ui| {
+                                                ui.label(
+                                                    egui::RichText::new("FraCantor")
+                                                        .size(32.0)
+                                                        .color(egui::Color32::from_rgb(189, 0, 0))
+                                                        .strong(),
+                                                );
+                                            });
+                                        });
+                                });
+
+                                ui.add_space(18.0);
+
+                                // TOUTES les boîtes avec EXACTEMENT les mêmes dimensions
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_parameters_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_presets_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_colors_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_export_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_stats_section(ui);
+                                });
+                            });
+                            
+                            ui.add_space(24.0); // Marge droite
+                        });
+                    });
+
+                    // SÉPARATION VERTICALE VISIBLE
+                    ui.add_space(8.0);
+                    let separator_rect = ui.allocate_space(egui::vec2(1.0, ui.available_height()));
+                    ui.painter().rect_filled(
+                        separator_rect.1,
+                        0.0,
+                        egui::Color32::from_rgb(255, 220, 220),
+                    );
+                    ui.add_space(8.0);
+
+                    // COLONNE DROITE (Zone principale)
+                    ui.vertical_centered(|ui| {
+                        ui.add_space(30.0);
+
+                        let available = ui.available_size();
+                        let frame_size = available.x.min(available.y - 60.0) - 60.0;
+
+                        egui::Frame::none()
+                            .fill(egui::Color32::from_rgb(252, 252, 252))
+                            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 200, 200)))
+                            .rounding(16.0)
+                            .inner_margin(40.0)
+                            .show(ui, |ui| {
+                                ui.set_width(frame_size);
+                                ui.set_height(frame_size);
+
+                                ui.centered_and_justified(|ui| {
+                                    self.render_fractal(ui, ctx);
+                                });
+                            });
+                    });
+                });
+            });
+                ui.horizontal_top(|ui| {
+                    // COLONNE GAUCHE (Sidebar) - Largeur fixe
+                    ui.allocate_ui(egui::vec2(320.0, ui.available_height()), |ui| {
+                        ui.add_space(20.0);
+
+                        ui.horizontal(|ui| {
+                            ui.add_space(12.0); // Marge gauche
+                            
+                            // DIMENSIONS FIXES POUR TOUTES LES CARTES
+                            ui.vertical(|ui| {
+                                let card_width = 296.0; // Largeur fixe
+                                let card_height = 112.0; // Hauteur fixe
+                                
+                                // Carte titre
+                                ui.allocate_ui(egui::vec2(card_width, 0.0), |ui| {
+                                    egui::Frame::none()
+                                        .fill(egui::Color32::from_rgb(249, 237, 237))
+                                        .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+                                        .rounding(12.0)
+                                        .inner_margin(egui::Margin::symmetric(20.0, 16.0))
+                                        .show(ui, |ui| {
+                                            ui.vertical_centered(|ui| {
+                                                ui.label(
+                                                    egui::RichText::new("FraCantor")
+                                                        .size(32.0)
+                                                        .color(egui::Color32::from_rgb(189, 0, 0))
+                                                        .strong(),
+                                                );
+                                            });
+                                        });
+                                });
+
+                                ui.add_space(18.0);
+
+                                // TOUTES les boîtes avec EXACTEMENT les mêmes dimensions
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_parameters_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_presets_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_colors_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_export_section(ui);
+                                });
+                                ui.add_space(16.0);
+
+                                ui.allocate_ui(egui::vec2(card_width, card_height), |ui| {
+                                    self.render_stats_section(ui);
+                                });
+                            });
+                            
+                            ui.add_space(24.0); // Marge droite
+                        });
+                    });
+
+                    // SÉPARATION VERTICALE VISIBLE
+                    ui.add_space(8.0);
+                    let separator_rect = ui.allocate_space(egui::vec2(1.0, ui.available_height()));
+                    ui.painter().rect_filled(
+                        separator_rect.1,
+                        0.0,
+                        egui::Color32::from_rgb(255, 220, 220),
+                    );
+                    ui.add_space(8.0);
+
+                    // COLONNE DROITE (Zone principale)
+                    ui.vertical_centered(|ui| {
+                        ui.add_space(30.0);
+
+                        let available = ui.available_size();
+                        let frame_size = available.x.min(available.y - 60.0) - 60.0;
+
+                        egui::Frame::none()
+                            .fill(egui::Color32::from_rgb(252, 252, 252))
+                            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 200, 200)))
+                            .rounding(16.0)
+                            .inner_margin(40.0)
+                            .show(ui, |ui| {
+                                ui.set_width(frame_size);
+                                ui.set_height(frame_size);
+
+                                ui.centered_and_justified(|ui| {
+                                    self.render_fractal(ui, ctx);
+                                });
+                            });
+                    });
+                });
+            });
     }
 }
 
 impl FraCantor {
     fn render_parameters_section(&mut self, ui: &mut egui::Ui) {
+        let available = ui.available_size();
+        let available = ui.available_size();
         egui::Frame::none()
-            .fill(egui::Color32::from_rgb(249, 237, 237))  // #F9EDED
-            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)))  // #FF0000
-            .rounding(8.0)
-            .inner_margin(12.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
             .show(ui, |ui| {
-                ui.label(egui::RichText::new("Paramètres")
-                    .size(16.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                    .strong());
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
                 
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Paramètres")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
+                
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Paramètres")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
                 ui.add_space(8.0);
-                
-                // Slider Itérations
+
+
                 ui.horizontal(|ui| {
                     ui.label("Itérations");
-                    ui.add_space(ui.available_width() - 40.0);
-                    ui.label(self.iterations.to_string());
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.label(self.iterations.to_string());
+                    });
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.label(self.iterations.to_string());
+                    });
                 });
-                ui.add(egui::Slider::new(&mut self.iterations, 0..=6)
-                    .show_value(false));
-                
-                ui.add_space(8.0);
-                
-                // Slider Zoom
+
+                ui.add(egui::Slider::new(&mut self.iterations, 0..=6).show_value(false));
+
+                ui.add_space(6.0);
+
+
+                ui.add(egui::Slider::new(&mut self.iterations, 0..=6).show_value(false));
+
+                ui.add_space(6.0);
+
                 ui.horizontal(|ui| {
                     ui.label("Zoom");
-                    ui.add_space(ui.available_width() - 60.0);
-                    ui.label(format!("x{:.1}", self.zoom));
-                });
-                ui.add(egui::Slider::new(&mut self.zoom, 1.0..=15.0)
-                    .show_value(false));
-            });
-    }
-    
-    fn render_presets_section(&mut self, ui: &mut egui::Ui) {
-        egui::Frame::none()
-            .fill(egui::Color32::from_rgb(249, 237, 237))  // #F9EDED
-            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)))  // #FF0000
-            .rounding(8.0)
-            .inner_margin(12.0)
-            .show(ui, |ui| {
-                ui.label(egui::RichText::new("Présets")
-                    .size(16.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                    .strong());
-                
-                ui.add_space(8.0);
-                
-                // Grille 2x2 de boutons
-                egui::Grid::new("presets_grid")
-                    .spacing([8.0, 8.0])
-                    .show(ui, |ui| {
-
-                        if ui.button("1 itération").clicked() {
-                            self.iterations = 1;
-                        }
-                        if ui.button("2 itérations").clicked() {
-                            self.iterations = 2;
-                        }
-                        ui.end_row();
-                        
-                        if ui.button("5 itérations").clicked() {
-                            self.iterations = 5;
-                        }
-                        if ui.button("Mystère").clicked() {
-                            let mut rng = rand::rng();
-                            self.iterations = rng.random_range(0..=6);
-                            self.zoom = 1.0;
-                        }
-                        ui.end_row();
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.label(format!("x{}", self.zoom as i32));
                     });
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.label(format!("x{}", self.zoom as i32));
+                    });
+                });
+
+                ui.add(egui::Slider::new(&mut self.zoom, 1.0..=15.0).show_value(false));
+
+                ui.add(egui::Slider::new(&mut self.zoom, 1.0..=15.0).show_value(false));
             });
     }
-    
-    fn render_colors_section(&mut self, ui: &mut egui::Ui) {
+
+
+    fn render_presets_section(&mut self, ui: &mut egui::Ui) {
+        let available = ui.available_size();
+        let available = ui.available_size();
         egui::Frame::none()
-            .fill(egui::Color32::from_rgb(249, 237, 237))  // #F9EDED
-            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)))  // #FF0000
-            .rounding(8.0)
-            .inner_margin(12.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
             .show(ui, |ui| {
-                ui.label(egui::RichText::new("Couleurs")
-                    .size(16.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                    .strong());
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
                 
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Présets")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
+                
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Présets")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
                 ui.add_space(8.0);
+
+                ui.vertical_centered(|ui| {
+                    egui::Grid::new("presets_grid")
+                        .spacing([10.0, 8.0])
+                        .show(ui, |ui| {
+                            let button_size = egui::vec2(120.0, 28.0);
+
+                ui.vertical_centered(|ui| {
+                    egui::Grid::new("presets_grid")
+                        .spacing([10.0, 8.0])
+                        .show(ui, |ui| {
+                            let button_size = egui::vec2(120.0, 28.0);
+
+                            if ui.add_sized(button_size, egui::Button::new("1 itération")).clicked() {
+                                self.iterations = 1;
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("2 itérations")).clicked() {
+                                self.iterations = 2;
+                            }
+
+                            ui.end_row();
+
+                            if ui.add_sized(button_size, egui::Button::new("5 itérations")).clicked() {
+                                self.iterations = 5;
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("Mystère")).clicked() {
+                                let mut rng = rand::rng();
+                                self.iterations = rng.random_range(0..=6);
+                                self.zoom = 1.0;
+                            }
+                        });
+                });
+                            if ui.add_sized(button_size, egui::Button::new("1 itération")).clicked() {
+                                self.iterations = 1;
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("2 itérations")).clicked() {
+                                self.iterations = 2;
+                            }
+
+                            ui.end_row();
+
+                            if ui.add_sized(button_size, egui::Button::new("5 itérations")).clicked() {
+                                self.iterations = 5;
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("Mystère")).clicked() {
+                                let mut rng = rand::rng();
+                                self.iterations = rng.random_range(0..=6);
+                                self.zoom = 1.0;
+                            }
+                        });
+                });
+            });
+    }
+
+
+    fn render_colors_section(&mut self, ui: &mut egui::Ui) {
+        let available = ui.available_size();
+        let available = ui.available_size();
+        egui::Frame::none()
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .show(ui, |ui| {
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
                 
-                // Échantillons de couleurs
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Couleurs")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.add_space(12.0);
+
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
+                
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Couleurs")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.add_space(12.0);
+
                 ui.horizontal(|ui| {
                     for (i, color) in self.colors.iter().enumerate() {
-                        let size = egui::vec2(40.0, 40.0);
+                        let size = egui::vec2(45.0, 45.0);
+                        let size = egui::vec2(45.0, 45.0);
                         let (rect, response) = ui.allocate_exact_size(size, egui::Sense::click());
-                        
+
+
                         let color32 = egui::Color32::from_rgba_unmultiplied(
-                            color[0], color[1], color[2], color[3]
+                            color[0], color[1], color[2], color[3],
+                            color[0], color[1], color[2], color[3],
                         );
-                        
-                        ui.painter().rect_filled(rect, 4.0, color32);
-                        
+
+                        ui.painter().rect_filled(rect, 6.0, color32);
+
+
+                        ui.painter().rect_filled(rect, 6.0, color32);
+
                         if i == self.selected_color {
                             ui.painter().rect_stroke(
                                 rect,
-                                4.0,
-                                egui::Stroke::new(3.0, egui::Color32::WHITE),
+                                6.0,
+                                egui::Stroke::new(3.0, egui::Color32::from_rgb(255, 255, 255)),
+                                6.0,
+                                egui::Stroke::new(3.0, egui::Color32::from_rgb(255, 255, 255)),
                             );
                         }
-                        
+
+
                         if response.clicked() {
                             self.selected_color = i;
                         }
+
+                        ui.add_space(4.0);
+
+                        ui.add_space(4.0);
                     }
                 });
             });
     }
-    
+
+
     fn render_export_section(&mut self, ui: &mut egui::Ui) {
+        let available = ui.available_size();
+        let available = ui.available_size();
         egui::Frame::none()
-            .fill(egui::Color32::from_rgb(249, 237, 237))  // #F9EDED
-            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)))  // #FF0000
-            .rounding(8.0)
-            .inner_margin(12.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
             .show(ui, |ui| {
-                ui.label(egui::RichText::new("Export")
-                    .size(16.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                    .strong());
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
                 
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Export")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
+                
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Export")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
                 ui.add_space(8.0);
-                
-                if ui.button("Exporter en png").clicked() {
-                    self.export_image("cantor.png");
-                }
-                if ui.button("Exporter en jpeg").clicked() {
-                    self.export_image("cantor.jpg");
-                }
-                if ui.button("Exporter en svg").clicked() {
-                    self.export_svg("cantor.svg");
-                }
-                if ui.button("Exporter en gif").clicked() {
-                    println!("Export GIF non implémenté");
-                }
+
+                ui.vertical_centered(|ui| {
+                    egui::Grid::new("export_grid")
+                        .spacing([8.0, 6.0])
+                        .show(ui, |ui| {
+                            let button_size = egui::vec2(120.0, 24.0);
+
+                            if ui.add_sized(button_size, egui::Button::new("PNG")).clicked() {
+                                self.export_image("cantor.png");
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("JPEG")).clicked() {
+                                self.export_image("cantor.jpg");
+                            }
+
+                            ui.end_row();
+
+                            if ui.add_sized(button_size, egui::Button::new("SVG")).clicked() {
+                                println!("Export SVG non implémenté");
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("GIF")).clicked() {
+                                println!("Export GIF non implémenté");
+                            }
+                        });
+                });
+
+                ui.vertical_centered(|ui| {
+                    egui::Grid::new("export_grid")
+                        .spacing([8.0, 6.0])
+                        .show(ui, |ui| {
+                            let button_size = egui::vec2(120.0, 24.0);
+
+                            if ui.add_sized(button_size, egui::Button::new("PNG")).clicked() {
+                                self.export_image("cantor.png");
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("JPEG")).clicked() {
+                                self.export_image("cantor.jpg");
+                            }
+
+                            ui.end_row();
+
+                            if ui.add_sized(button_size, egui::Button::new("SVG")).clicked() {
+                                self.export_svg("cantor.svg");
+                            }
+
+                            if ui.add_sized(button_size, egui::Button::new("GIF")).clicked() {
+                                println!("Export GIF non implémenté");
+                            }
+                        });
+                });
             });
     }
-    
+
+
     fn render_stats_section(&mut self, ui: &mut egui::Ui) {
+        let available = ui.available_size();
+        let available = ui.available_size();
         egui::Frame::none()
-            .fill(egui::Color32::from_rgb(249, 237, 237))  // #F9EDED
-            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(255, 0, 0)))  // #FF0000
-            .rounding(8.0)
-            .inner_margin(12.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
+            .fill(egui::Color32::from_rgb(249, 237, 237))
+            .stroke(egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 0, 0)))
+            .rounding(12.0)
+            .inner_margin(16.0)
             .show(ui, |ui| {
-                ui.label(egui::RichText::new("Stats")
-                    .size(16.0)
-                    .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                    .strong());
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
                 
-                ui.add_space(8.0);
-                
-                let num_squares = 4_u32.pow(self.iterations);
                 ui.horizontal(|ui| {
-                    ui.label(egui::RichText::new("Carrés :")
-                        .color(egui::Color32::from_rgb(189, 0, 0))  // #BD0000
-                        .strong());
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Stats")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.add_space(12.0);
+
+                ui.set_min_size(egui::vec2(available.x, available.y));
+                ui.set_max_size(egui::vec2(available.x, available.y));
+                
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("│")
+                            .size(20.0)
+                            .color(egui::Color32::from_rgb(255, 0, 0))
+                            .strong(),
+                    );
+                    ui.add_space(4.0);
+                    ui.label(
+                        egui::RichText::new("Stats")
+                            .size(17.0)
+                            .color(egui::Color32::from_rgb(40, 40, 40))
+                            .strong(),
+                    );
+                });
+
+                ui.add_space(12.0);
+
+                let num_squares = 4_u32.pow(self.iterations);
+
+
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new("Carrés :")
+                            .color(egui::Color32::from_rgb(189, 0, 0))
+                            .strong(),
+                    );
+                    ui.label(
+                        egui::RichText::new("Carrés :")
+                            .color(egui::Color32::from_rgb(189, 0, 0))
+                            .strong(),
+                    );
                     ui.label(num_squares.to_string());
                 });
             });
     }
-    
+
+
     fn render_fractal(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         let available_size = ui.available_size();
         let size = available_size.min_elem() as u32;
-        
-        // Générer l'image du carré de Cantor
+
+
         let image = self.generate_cantor_image(size);
-        
-        // Convertir en ColorImage pour egui
         let color_image = self.rgba_to_color_image(&image);
-        
-        // Créer ou mettre à jour la texture
+
+
         let texture = self.texture.get_or_insert_with(|| {
             ctx.load_texture("cantor", color_image.clone(), egui::TextureOptions::default())
         });
+
+
         texture.set(color_image, egui::TextureOptions::NEAREST);
-        
-        // Afficher l'image centrée
-        ui.centered_and_justified(|ui| {
-            ui.image(&*texture);
-        });
+
+        ui.image(&*texture);
+
+        ui.image(&*texture);
     }
-    
+
+
     fn generate_cantor_image(&self, size: u32) -> RgbaImage {
         let mut image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
         let color = self.colors[self.selected_color];
-        
-        // Calculer la taille de la vue (plus on zoom, plus la vue est petite)
+
+
         let view_size = size as f32 / self.zoom;
-        
-        // Point focal : on zoom vers le coin supérieur gauche
-        // Plus précisément vers le centre du premier tiers (là où est le premier carré)
-        // Point focal : coin supérieur gauche (0, 0)
         let view_start_x = 0.0;
         let view_start_y = 0.0;
 
-        
-        // Dessiner la fractale complète dans un buffer temporaire
         let mut full_image = RgbaImage::from_pixel(size, size, Rgba([255, 255, 255, 255]));
         self.draw_cantor_square(&mut full_image, 0, 0, size, self.iterations, color);
-        
-        // Extraire et agrandir la région visible
+
+
         for py in 0..size {
             for px in 0..size {
-                // Mapper les coordonnées de l'image finale vers la région source
                 let src_x = view_start_x + (px as f32 * view_size / size as f32);
                 let src_y = view_start_y + (py as f32 * view_size / size as f32);
-                
+
+
                 if src_x >= 0.0 && src_x < size as f32 && src_y >= 0.0 && src_y < size as f32 {
                     let pixel = full_image.get_pixel(src_x as u32, src_y as u32);
                     image.put_pixel(px, py, *pixel);
                 }
             }
         }
-        
+
+
         image
     }
 
@@ -398,13 +897,17 @@ impl FraCantor {
         if size == 0 {
             return;
         }
-        
+
+
         if iterations == 0 {
             self.draw_filled_rectangle(image, x, y, size, color);
             return;
         }
-        
+
+
         let sub_size = size / 3;
+
+
         for i in [0, 2].iter() {
             for j in [0, 2].iter() {
                 self.draw_cantor_square(
@@ -418,7 +921,8 @@ impl FraCantor {
             }
         }
     }
-    
+
+
     fn draw_filled_rectangle(
         &self,
         image: &mut RgbaImage,
@@ -437,7 +941,8 @@ impl FraCantor {
             }
         }
     }
-    
+
+
     fn rgba_to_color_image(&self, img: &RgbaImage) -> egui::ColorImage {
         let size = [img.width() as usize, img.height() as usize];
         let pixels = img
@@ -446,9 +951,11 @@ impl FraCantor {
             .collect();
         egui::ColorImage { size, pixels }
     }
-    
+
+
     fn export_image(&self, filename: &str) {
-        let size = 2187; // 3^7 pour être divisible
+        let size = 2187;
+        let size = 2187;
         let image = self.generate_cantor_image(size);
         image.save(filename).expect("Erreur lors de la sauvegarde");
         println!("✓ Image sauvegardée: {}", filename);
