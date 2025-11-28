@@ -386,10 +386,6 @@ impl FraCantor {
     }
 
 
-
-
-
-    
     fn draw_cantor_square(
         &self,
         image: &mut RgbaImage,
@@ -457,6 +453,7 @@ impl FraCantor {
         image.save(filename).expect("Erreur lors de la sauvegarde");
         println!("✓ Image sauvegardée: {}", filename);
     }
+    
     fn export_svg(&self, filename: &str) {
         
         let size = 2187; // 3^7 pour être divisible
